@@ -3,6 +3,7 @@ from typing import List, Tuple, Dict, Union
 from termcolor import colored
 from enum import Enum
 
+
 class Action(Enum):
     UP = "UP"
     DOWN = "DOWN"
@@ -15,11 +16,11 @@ class Action(Enum):
 
 class MDP:
     def __init__(
-        self,
-        board: List[str],
-        terminal_states: List[Tuple[int]],
-        transition_function: Dict[Union[str, Action], Tuple[float]],
-        gamma: float,
+            self,
+            board: List[str],
+            terminal_states: List[Tuple[int]],
+            transition_function: Dict[Union[str, Action], Tuple[float]],
+            gamma: float,
     ):
         self.board = board
         self.num_row = len(board)
@@ -38,26 +39,26 @@ class MDP:
     def step(self, state, action: Union[str, Action]):
         if isinstance(action, str):
             action = Action[action]
-            
+
         next_state = tuple(map(sum, zip(state, self.actions[action])))
 
         if (
-            next_state[0] < 0
-            or next_state[1] < 0
-            or next_state[0] >= self.num_row
-            or next_state[1] >= self.num_col
-            or self.board[next_state[0]][next_state[1]] == "WALL"
+                next_state[0] < 0
+                or next_state[1] < 0
+                or next_state[0] >= self.num_row
+                or next_state[1] >= self.num_col
+                or self.board[next_state[0]][next_state[1]] == "WALL"
         ):
             next_state = state
         return next_state
-    
+
     def get_reward(self, state: Tuple[int, int]) -> float:
         return self.board[state[0]][state[1]]
-    
+
     ###################### Print Utilities ######################
 
     def format_cell(
-        self, r: int, c: int, value: str, is_terminal: bool, is_wall: bool
+            self, r: int, c: int, value: str, is_terminal: bool, is_wall: bool
     ) -> str:
         if is_terminal:
             return " " + colored(value[:5].ljust(5), "red") + " |"
@@ -87,9 +88,8 @@ class MDP:
     def print_policy(self, policy: List[List[Union[str, float]]]):
         self.print_board(policy)
 
-
     @staticmethod
-    def load_mdp(board: str='board', terminal_states: str='terminal_states', transition_function: str='transition_function', gamma: float = 0.9) -> MDP:
+    def load_mdp(board: str = 'board', terminal_states: str = 'terminal_states', transition_function: str = 'transition_function', gamma: float = 0.9) -> MDP:
         """
         Loads an MDP from the specified files.
 
@@ -99,7 +99,7 @@ class MDP:
         :param gamma: Discount factor.
         :return: An instance of MDP.
         """
-        
+
         board_env = []
         with open(board, 'r') as f:
             for line in f.readlines():
@@ -120,11 +120,9 @@ class MDP:
                 action_key = Action(action)
                 transition_function_env[action_key] = tuple(map(float, prob))
 
-
-
         mdp = MDP(board=board_env,
                   terminal_states=terminal_states_env,
                   transition_function=transition_function_env,
                   gamma=gamma)
-        
+
         return mdp
