@@ -21,10 +21,11 @@ def value_iteration(mdp: MDP, U_init: np.ndarray, epsilon: float = 10 ** (-3)) -
             for col in range(mdp.num_col):
                 # fetch the state
                 state = (row, col)
-                # check if the state is terminal or a wall
-                if state in mdp.terminal_states or mdp.board[row][col] == 'WALL':
+                if mdp.board[row][col] == 'WALL':
                     continue
-
+                if state in mdp.terminal_states:
+                    U_final[row, col] = mdp.get_reward(state)
+                    continue
                 # find the best action to take from the current state
                 max_utility = float('-inf')
                 reward = float(mdp.get_reward(state))
@@ -33,8 +34,8 @@ def value_iteration(mdp: MDP, U_init: np.ndarray, epsilon: float = 10 ** (-3)) -
                     expected_utility = 0
                     if action not in mdp.transition_function:
                         continue
-                    for prob in mdp.transition_function[action]:
-                        next_state = mdp.step(state, action)
+                    for prob, current_action_with_prob in zip(mdp.transition_function[action], mdp.actions):
+                        next_state = mdp.step(state, current_action_with_prob)
                         expected_utility += prob * u_old[next_state[0], next_state[1]]
 
                     expected_utility = reward + gamma * expected_utility
@@ -60,41 +61,39 @@ def value_iteration(mdp: MDP, U_init: np.ndarray, epsilon: float = 10 ** (-3)) -
 
 
 def get_policy(mdp: MDP, U: np.ndarray) -> np.ndarray:
-    # Given the mdp and the utility of each state - U (which satisfies the Belman equation)
-    # return: the policy
-    #
-
-    # initialize the policy
+    # Initialize an empty policy array
     policy = np.empty((mdp.num_row, mdp.num_col), dtype=object)
 
-    # iterate over all the states
+    # Iterate over all states
     for row in range(mdp.num_row):
         for col in range(mdp.num_col):
-            # fetch the state
             state = (row, col)
-            # check if the state is terminal or a wall
+
+            # Skip terminal states and walls
             if state in mdp.terminal_states or mdp.board[row][col] == 'WALL':
                 policy[row, col] = None
                 continue
 
-            # find the best action that got us to this state, considering U have already converged
-            max_utility = float('-inf')
+            # Determine the best action for this state
             best_action = None
-            reward = mdp.get_reward(state)
+            max_utility = float('-inf')
+
             for action in mdp.actions:
                 expected_utility = 0
-                if (state, action) not in mdp.transition_function:
-                    continue
-                for prob, next_state in mdp.transition_function[(state, action)]:
+
+                # Use transition probabilities and utilities to calculate expected utility
+                for prob, current_action_with_prob in zip(mdp.transition_function[action], mdp.actions):
+                    next_state = mdp.step(state, current_action_with_prob)
                     expected_utility += prob * U[next_state[0], next_state[1]]
 
-                expected_utility = reward + mdp.gamma * expected_utility
-
+                # Compare to find the best action
                 if expected_utility > max_utility:
                     max_utility = expected_utility
                     best_action = action
 
+            # Assign the best action to the policy
             policy[row, col] = best_action
+
     return policy
 
 
