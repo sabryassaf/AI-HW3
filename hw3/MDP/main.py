@@ -33,27 +33,27 @@ def example_driver():
     print("\nFinal policy:")
     policy = get_policy(mdp, U_new)
     mdp.print_policy(policy)
-    #
-    #
-    # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    # print("@@@@@@@@@ Policy iteration @@@@@@@@")
-    # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    #
-    # print("\nPolicy evaluation:")
-    # U_eval = policy_evaluation(mdp, policy)
-    # mdp.print_utility(U_eval)
-    #
-    # policy = [['UP', 'UP', 'UP', 0],
-    #           ['UP', 'WALL', 'UP', 0],
-    #           ['UP', 'UP', 'UP', 'UP']]
-    #
-    # print("\nInitial policy:")
-    # mdp.print_policy(policy)
-    # print("\nFinal policy:")
-    # policy_new = policy_iteration(mdp, policy)
-    # mdp.print_policy(policy_new)
-    #
-    # print("Done!")
+
+
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print("@@@@@@@@@ Policy iteration @@@@@@@@")
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+
+    print("\nPolicy evaluation:")
+    U_eval = policy_evaluation(mdp, policy)
+    mdp.print_utility(U_eval)
+
+    policy = [['UP', 'UP', 'UP', 0],
+              ['UP', 'WALL', 'UP', 0],
+              ['UP', 'UP', 'UP', 'UP']]
+
+    print("\nInitial policy:")
+    mdp.print_policy(policy)
+    print("\nFinal policy:")
+    policy_new = policy_iteration(mdp, policy)
+    mdp.print_policy(policy_new)
+
+    print("Done!")
     
 
 

@@ -24,7 +24,7 @@ def value_iteration(mdp: MDP, U_init: np.ndarray, epsilon: float = 10 ** (-3)) -
                 if mdp.board[row][col] == 'WALL':
                     continue
                 if state in mdp.terminal_states:
-                    U_final[row, col] = mdp.get_reward(state)
+                    U_final[row, col] = float(mdp.get_reward(state))
                     continue
                 # find the best action to take from the current state
                 max_utility = float('-inf')
@@ -116,16 +116,17 @@ def policy_evaluation(mdp: MDP, policy: np.ndarray) -> np.ndarray:
 
             if state in mdp.terminal_states or mdp.board[row][col] == 'WALL':
                 continue
-            action = policy[row, col]
-            if (state, action) not in mdp.transition_function:
-                continue
-            transition_probs = mdp.transition_function[(state, action)]
+            action = Action(policy[row, col])
+            # change the action to the actual action
 
-            reward = mdp.get_reward(state)
+            transition_probs = mdp.transition_function[action]
+
+            reward = float(mdp.get_reward(state))
             state_index = row * mdp.num_col + col
             R[state_index] = reward
 
-            for prob, next_state in transition_probs:
+            for prob, current_action_with_prob in zip(mdp.transition_function[action], mdp.actions):
+                next_state = mdp.step(state, current_action_with_prob)
                 next_state_index = next_state[0] * mdp.num_col + next_state[1]
                 P[state_index, next_state_index] += prob
 
@@ -158,21 +159,25 @@ def policy_iteration(mdp: MDP, policy_init: np.ndarray) -> np.ndarray:
 
             # check state status
             if state in mdp.terminal_states or mdp.board[row][col] == 'WALL':
+                optimal_policy[row, col] = None
                 continue
 
             # fetch current policy
-            old_action = optimal_policy[state]
+            old_action = Action(optimal_policy[state])
             new_action = None
             max_utility = float('-inf')
-            reward = mdp.get_reward(state)
+            reward = float(mdp.get_reward(state))
 
             # iterate over all possible actions
             for action in mdp.actions:
                 expected_utility = 0
-                if (state, action) not in mdp.transition_function:
+                if action not in mdp.transition_function:
                     continue
-                for prob, next_state in mdp.transition_function[(state, action)]:
+
+                for prob, current_action_with_prob in zip(mdp.transition_function[action], mdp.actions):
+                    next_state = mdp.step(state, current_action_with_prob)
                     expected_utility += prob * U[next_state[0], next_state[1]]
+
 
                 expected_utility = reward + mdp.gamma * expected_utility
                 if expected_utility > max_utility:
