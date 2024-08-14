@@ -67,17 +67,23 @@ def adp_example_driver():
     for action, probs in transition_probabilities.items():
         print(f"{action}: {probs}")
 
+
 def adp_extra_examples():
     sim = Simulator()
     num_episodes_list = [10, 100, 1000]
     for num_episodes in num_episodes_list:
         reward_matrix, transition_probabilities = adp_algorithm(sim, num_episodes=num_episodes)
-        mdp = MDP.load_mdp(board=reward_matrix, transition_function=transition_probabilities)
+        reward_matrix_list = []
+        for row in reward_matrix:
+            reward_matrix_list.append(''.join(map(str, row)))
+        current_mdp = MDP(reward_matrix_list, )
         policy = [['UP', 'UP', 'UP', 0],
                   ['UP', 'WALL', 'UP', 0],
                   ['UP', 'UP', 'UP', 'UP']]
         policy_new = policy_iteration(mdp, policy)
         print(f"\nPolicy after {num_episodes} episodes:")
+        mdp.print_policy(policy_new)
+
 
 if __name__ == '__main__':
     # run our example
