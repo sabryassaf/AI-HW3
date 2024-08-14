@@ -15,7 +15,7 @@ from typing import List, Tuple
 ========================================================================
 """
 
-ID = 123456789  # TODO: change it to your personal ID
+ID = 208247577  # TODO: change it to your personal ID
 random_gen = RandomState(seed=ID)
 print_formatted_values = False
 
@@ -39,7 +39,7 @@ def accuracy(y: np.array, y_pred: np.array)-> float:
     assert y.ndim == 1
     accuracy_val = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    accuracy_val = np.sum(y == y_pred) / y.shape[0]
     # ========================
 
     return accuracy_val
@@ -61,7 +61,7 @@ def l2_dist(x1: np.array, x2: np.array):
     dists = None
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError
+    dists = np.sqrt(np.sum((x1[:, np.newaxis] - x2) ** 2, axis=2))
     # ========================
 
     return dists
@@ -75,9 +75,9 @@ def load_data_set(clf_type: str)-> Tuple[List[str], pd.DataFrame, pd.DataFrame]:
     """
     assert clf_type in ('ID3', 'KNN'), 'The parameter clf_type must be ID3 or KNN'
     hw_path = str(pathlib.Path(__file__).parent.absolute())
-    dataset_path = hw_path + f"\\{clf_type}-dataset\\"
-    train_file_path = dataset_path + "\\train.csv"
-    test_file_path = dataset_path + "\\test.csv"
+    dataset_path = hw_path + f"/{clf_type}-dataset/"
+    train_file_path = dataset_path + "/train.csv"
+    test_file_path = dataset_path + "/test.csv"
     # Import all columns omitting the fist which consists the names of the attributes
     train_dataset = pd.read_csv(train_file_path)
     test_dataset = pd.read_csv(test_file_path)
