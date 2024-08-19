@@ -114,7 +114,12 @@ def policy_evaluation(mdp: MDP, policy: np.ndarray) -> np.ndarray:
         for col in range(mdp.num_col):
             state = (row, col)
 
-            if state in mdp.terminal_states or mdp.board[row][col] == 'WALL':
+            if mdp.board[row][col] == 'WALL':
+                continue
+            if state in mdp.terminal_states:
+                reward = float(mdp.get_reward(state))
+                state_index = row * mdp.num_col + col
+                R[state_index] = reward
                 continue
             action = Action(policy[row, col])
             # change the action to the actual action
@@ -177,7 +182,6 @@ def policy_iteration(mdp: MDP, policy_init: np.ndarray) -> np.ndarray:
                 for prob, current_action_with_prob in zip(mdp.transition_function[action], mdp.actions):
                     next_state = mdp.step(state, current_action_with_prob)
                     expected_utility += prob * U[next_state[0], next_state[1]]
-
 
                 expected_utility = reward + mdp.gamma * expected_utility
                 if expected_utility > max_utility:
